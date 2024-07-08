@@ -1,19 +1,22 @@
 // Initialize cart from localStorage and update cart count
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 updateCartCount();
-updateCartTotal(); // New function to update cart total
+updateCartTotal();
 
 // Function to add item to cart
-function addToCart(name, price, png, event) {
+function addToCart(name, price, img, event) {
+    const quantityInput = event.target.previousElementSibling;
+    const quantity = parseInt(quantityInput.value) || 1;
+
     const item = cart.find(item => item.name === name);
     if (item) {
-        item.quantity++;
+        item.quantity += quantity;
     } else {
-        cart.push({ name, price, png, quantity: 1 });   
+        cart.push({ name, price, img, quantity: quantity });
     }
     localStorage.setItem('cart', JSON.stringify(cart));
     updateCartCount();
-    updateCartTotal(); // Update cart total after adding item
+    updateCartTotal();
     if (event) {
         event.preventDefault();
     }

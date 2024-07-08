@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function displayCartItems() {
     const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
-
     const cartItemsContainer = document.querySelector('.cart-items');
     cartItemsContainer.innerHTML = '';
 
@@ -14,7 +13,7 @@ function displayCartItems() {
         itemElement.classList.add('cart-item');
 
         const itemImage = document.createElement('img');
-        itemImage.src = '../Images' + item.png; // Adjust the path based on your file structure
+        itemImage.src = '../Images/' + item.img; // Adjust the path based on your file structure
         itemImage.alt = item.name;
         itemElement.appendChild(itemImage);
 
@@ -29,14 +28,48 @@ function displayCartItems() {
         itemPrice.textContent = `$${item.price.toFixed(2)}`;
         itemDetails.appendChild(itemPrice);
 
-        const itemQuantity = document.createElement('p');
-        itemQuantity.textContent = `Quantity: ${item.quantity}`;
+        const itemQuantity = document.createElement('div');
+        itemQuantity.classList.add('quantity-controls');
+
+        const decreaseBtn = document.createElement('button');
+        decreaseBtn.textContent = '-';
+        decreaseBtn.onclick = function() {
+            updateQuantity(item.name, -1);
+        };
+        itemQuantity.appendChild(decreaseBtn);
+
+        const quantityText = document.createElement('span');
+        quantityText.textContent = item.quantity;
+        quantityText.classList.add('item-quantity');
+        itemQuantity.appendChild(quantityText);
+
+        const increaseBtn = document.createElement('button');
+        increaseBtn.textContent = '+';
+        increaseBtn.onclick = function() {
+            updateQuantity(item.name, 1);
+        };
+        itemQuantity.appendChild(increaseBtn);
+
         itemDetails.appendChild(itemQuantity);
 
         itemElement.appendChild(itemDetails);
 
         cartItemsContainer.appendChild(itemElement);
     });
+}
+
+function updateQuantity(name, change) {
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const item = cart.find(item => item.name === name);
+    if (item) {
+        item.quantity += change;
+        if (item.quantity <= 0) {
+            cart = cart.filter(item => item.name !== name);
+        }
+    }
+    localStorage.setItem('cart', JSON.stringify(cart));
+    displayCartItems();
+    updateCartSummary();
 }
 
 function updateCartSummary() {
@@ -63,6 +96,5 @@ function updateCartSummary() {
 }
 
 function checkout() {
-    // Implement checkout functionality here
     alert('Checkout functionality to be implemented!');
 }
